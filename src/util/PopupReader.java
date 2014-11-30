@@ -1,22 +1,18 @@
 package util;
 
-import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.controlsfx.dialog.Dialogs;
 
 /**
- * Provides variety of methods to simplify getting user input from console.
+ * Provides variety of methods to simplify getting user input from popups.
  * 
- * @author Robert C. Duvall
+ * @author Teddy Ward
  */
-public class ConsoleReader
-{
-    // by default, read input from the user's console
-    private static Scanner in = new Scanner(new InputStreamReader(System.in));
-
+public class PopupReader {
+    private static String BET_TITLE = "Place a bet!";
 
     /**
      * Prompts the user to input an integer value.
@@ -26,10 +22,13 @@ public class ConsoleReader
      */
     public static int promptInt (String prompt)
     {
-        System.out.print(prompt);
-        return in.nextInt();
+        try {
+            return Integer.parseInt(promptString(prompt)); 
+        }
+        catch (NumberFormatException nfe) {
+            return -1;
+        }
     }
-
 
     /**
      * Prompts the user to input an real value.
@@ -39,10 +38,13 @@ public class ConsoleReader
      */
     public static double promptDouble (String prompt)
     {
-        System.out.print(prompt);
-        return in.nextDouble();
+        try {
+            return Double.parseDouble(promptString(prompt)); 
+        }
+        catch (NumberFormatException nfe) {
+            return -1;
+        }
     }
-
 
     /**
      * Prompts the user to input a word.
@@ -50,13 +52,14 @@ public class ConsoleReader
      * @param prompt output to the user before waiting for input
      * @return the value entered, waiting if necessary until one is given
      */
-    public static String promptString (String prompt)
-    {
-        System.out.print(prompt);
-        return in.next();
+    public static String promptString (String prompt) {
+        return Dialogs.create()
+                .title(BET_TITLE)
+                .message(prompt)
+                .showTextInput("")
+                .get();
     }
-
-
+    
     /**
      * Prompts the user to input an integer value between the given values,
      * inclusive. Note, repeatedly prompts the user until a valid value is

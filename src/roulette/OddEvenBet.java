@@ -1,9 +1,6 @@
 package roulette;
 
-import java.util.Arrays;
-import java.util.Optional;
-
-import org.controlsfx.dialog.Dialogs;
+import util.PopupReader;
 
 public class OddEvenBet extends Bet {
     private String myChoice;
@@ -22,10 +19,6 @@ public class OddEvenBet extends Bet {
 
     @Override
     public void place () {
-        Optional<String> response = Dialogs.create()
-                .title("Place a bet!")
-                .message("Will the ball land on an even or odd number?")
-                .showChoices(Arrays.asList("Odd", "Even"));
-        myChoice = response.get();
+        myChoice = PopupReader.promptOneOf("Please bet", "even", "odd");
     }
 }

@@ -4,10 +4,8 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Optional;
 
-import org.controlsfx.dialog.Dialogs;
-
+import util.PopupReader;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -124,11 +122,8 @@ public class Game {
      * @param player one that wants to play a round of the game
      */
     private void playRound(Bet bet) {
-        Optional<String> response = Dialogs.create()
-                .title("Place a bet!")
-                .message("Enter the amount you'd like to bet")
-                .showTextInput("");
-        int amount = Integer.parseInt(response.get());
+        int amount = PopupReader.promptRange("How much do you want to bet",
+                0, myPlayer.getBankroll());
         bet.place();
         
         myOutput.setText("Spinning ...");

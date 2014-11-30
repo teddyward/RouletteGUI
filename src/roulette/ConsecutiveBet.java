@@ -1,8 +1,6 @@
 package roulette;
 
-import java.util.Optional;
-
-import org.controlsfx.dialog.Dialogs;
+import util.PopupReader;
 
 public class ConsecutiveBet extends Bet {
     private int myStart;
@@ -18,11 +16,6 @@ public class ConsecutiveBet extends Bet {
 
     @Override
     public void place () {
-        Optional<String> response = Dialogs.create()
-                .title("Place a bet!")
-                .masthead("Will the ball land in one of a sequence of numbers?")
-                .message("Enter the start of a three number sequence you'd like to bet on:")
-                .showTextInput("");
-        myStart = Integer.parseInt(response.get());
+        myStart = PopupReader.promptRange("Enter first of three consecutive numbers", 1, 34);
     }
 }
