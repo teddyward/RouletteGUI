@@ -1,6 +1,6 @@
 package roulette;
 
-import util.PopupReader;
+import game.Main;
 
 public class ConsecutiveBet extends Bet {
     private int myStart;
@@ -16,6 +16,6 @@ public class ConsecutiveBet extends Bet {
 
     @Override
     public void place () {
-        myStart = PopupReader.promptRange("Enter first of three consecutive numbers", 1, 34);
+        myStart = Main.READER.promptRange("Enter first of three consecutive numbers", 1, 34);
     }
 }

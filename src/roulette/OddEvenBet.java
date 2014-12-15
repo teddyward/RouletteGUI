@@ -1,6 +1,6 @@
 package roulette;
 
-import util.PopupReader;
+import game.Main;
 
 public class OddEvenBet extends Bet {
     private String myChoice;
@@ -19,6 +19,6 @@ public class OddEvenBet extends Bet {
 
     @Override
     public void place () {
-        myChoice = PopupReader.promptOneOf("Please bet", "even", "odd");
+        myChoice = Main.READER.promptOneOf("Please bet", "even", "odd");
     }
 }

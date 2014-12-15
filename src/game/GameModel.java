@@ -9,7 +9,6 @@ import roulette.Gambler;
 import roulette.OddEvenBet;
 import roulette.RedBlackBet;
 import roulette.Wheel;
-import util.PopupReader;
 
 /**
  * Plays a game of roulette.
@@ -67,7 +66,7 @@ public class GameModel {
      * @return the results of this round of the game
      */
     public String playRound(Bet bet) {
-        int amount = PopupReader.promptRange("How much do you want to bet",
+        int amount = Main.READER.promptRange("How much do you want to bet",
                 0, myPlayer.getBankroll());
         bet.place();
         

@@ -2,6 +2,9 @@ package game;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import roulette.Gambler;
+import util.ConsoleSource;
+import util.InputReader;
+import util.PopupSource;
 
 
 /**
@@ -11,6 +14,17 @@ import roulette.Gambler;
  * @author Teddy Ward
  */
 public class Main extends Application {
+	
+	/**
+	 * This object will read input from the user from an InputSource.  
+	 * Just change the parameter to the InputReader constructor
+	 * to change the input source.
+	 * Currently:
+	 * Enter "new ConsoleSource()" to prompt for user input through the console.
+	 * Enter "new PopupSource()" to prompt for user input through popup windows.
+	 */
+	public static final InputReader READER = new InputReader(new ConsoleSource());
+	
     public static void main (String[] args) {
         launch(args);
     }

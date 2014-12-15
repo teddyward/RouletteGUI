@@ -4,62 +4,39 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.controlsfx.dialog.Dialogs;
-
 /**
- * Provides variety of methods to simplify getting user input from popups.
- * 
+ * Reads Input from the user from a given input source
  * @author Teddy Ward
+ * @author Robert C. Duvall
  */
-public class PopupReader {
-    private static String BET_TITLE = "Place a bet!";
-
-    /**
-     * Prompts the user to input an integer value.
-     * 
-     * @param prompt output to the user before waiting for input
-     * @return the value entered, waiting if necessary until one is given
-     */
-    public static int promptInt (String prompt)
-    {
-        try {
-            return Integer.parseInt(promptString(prompt)); 
-        }
-        catch (NumberFormatException nfe) {
-            return -1;
-        }
-    }
-
-    /**
-     * Prompts the user to input an real value.
-     * 
-     * @param prompt output to the user before waiting for input
-     * @return the value entered, waiting if necessary until one is given
-     */
-    public static double promptDouble (String prompt)
-    {
-        try {
-            return Double.parseDouble(promptString(prompt)); 
-        }
-        catch (NumberFormatException nfe) {
-            return -1;
-        }
-    }
-
-    /**
-     * Prompts the user to input a word.
-     * 
-     * @param prompt output to the user before waiting for input
-     * @return the value entered, waiting if necessary until one is given
-     */
-    public static String promptString (String prompt) {
-        return Dialogs.create()
-                .title(BET_TITLE)
-                .message(prompt)
-                .showTextInput("")
-                .get();
-    }
-    
+public class InputReader {
+	
+	private InputSource myInputSource;
+	
+	public InputReader(InputSource inputSource) {
+		myInputSource = inputSource;
+	}
+	
+	/**
+	 * Following three methods all use the Strategy
+	 * design pattern in order to generate a prompt
+	 * for a different data type from the proper 
+	 * input source.
+	 * @param prompt the String prompt to give the user
+	 * @return the data the user input
+	 */
+	public int promptInt (String prompt) {
+		return myInputSource.promptInt(prompt);
+	}
+	
+	public double promptDouble (String prompt) {
+		return myInputSource.promptDouble(prompt);
+	}
+	
+	public String promptString (String prompt) {
+		return myInputSource.promptString(prompt);
+	}
+	
     /**
      * Prompts the user to input an integer value between the given values,
      * inclusive. Note, repeatedly prompts the user until a valid value is
@@ -70,14 +47,14 @@ public class PopupReader {
      * @param hi maximum possible valid value allowed
      * @return the value entered, waiting if necessary until one is given
      */
-    public static int promptRange (String prompt, int low, int hi)
+    public int promptRange (String prompt, int low, int hi)
     {
         final String FULL_PROMPT = String.format("%s between %d and %d? ",
                                                  prompt, low, hi);
         int answer;
         do
         {
-            answer = promptInt(FULL_PROMPT);
+            answer = myInputSource.promptInt(FULL_PROMPT);
         }
         while (low > answer || answer > hi);
         return answer;
@@ -92,7 +69,7 @@ public class PopupReader {
      * @param choices possible valid responses user can enter
      * @return the value entered, waiting if necessary until one is given
      */
-    public static String promptOneOf (String prompt, String ... choices)
+    public String promptOneOf (String prompt, String ... choices)
     {
         final String FULL_PROMPT = prompt + " one of " + Arrays.asList(choices) + "? ";
         return promptString(FULL_PROMPT, choices);
@@ -106,7 +83,7 @@ public class PopupReader {
      * @param prompt output to the user before waiting for input
      * @return the value entered, waiting if necessary until one is given
      */
-    public static boolean promptYesNo (String prompt)
+    public boolean promptYesNo (String prompt)
     {
         String answer = promptString(prompt, "yes", "Yes", "y", "Y", "no", "No", "n", "N");
         return (answer.toLowerCase().startsWith("y"));
@@ -123,13 +100,13 @@ public class PopupReader {
      * @param choices possible valid responses user can enter
      * @return the value entered, waiting if necessary until one is given
      */
-    private static String promptString (String prompt, String ... choices)
+    private String promptString (String prompt, String ... choices)
     {
         Set<String> set = new TreeSet<String>(Arrays.asList(choices));
         String result;
         do
         {
-            result = promptString(prompt);
+            result = myInputSource.promptString(prompt);
         }
         while (!set.contains(result));
         return result;
