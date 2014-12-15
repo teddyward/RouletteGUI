@@ -23,7 +23,7 @@ public class Main extends Application {
 	 * Enter "new ConsoleSource()" to prompt for user input through the console.
 	 * Enter "new PopupSource()" to prompt for user input through popup windows.
 	 */
-	public static final InputReader READER = new InputReader(new ConsoleSource());
+	public static final InputReader READER = new InputReader(new PopupSource());
 	
     public static void main (String[] args) {
         launch(args);
