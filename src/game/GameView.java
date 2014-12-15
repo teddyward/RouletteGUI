@@ -1,11 +1,12 @@
-package roulette;
+package game;
+
 
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import util.PopupReader;
+import roulette.Bet;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -18,11 +19,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 
 /**
- * Plays a game of roulette.
- * 
- * @author Robert C. Duvall
+ * The window through which we can interact with the game
+ * @author Teddy Ward
+ *
  */
-public class Game {
+public class GameView {
     // constants
     public static final Dimension DEFAULT_SIZE = new Dimension(300, 100);
     private static final String DEFAULT_NAME = "Roulette";
@@ -30,19 +31,15 @@ public class Game {
     private Scene myScene;
     private Label myBankrollDisplay;
     private Label myOutput;
-    private Gambler myPlayer;
 
-    private Wheel myWheel;
-    private Bet[] myPossibleBets = { new RedBlackBet("Red or Black", 1),
-            new OddEvenBet("Odd or Even", 1),
-            new ConsecutiveBet("Three in a Row", 11), };
+    private GameModel myModel;
 
     /**
-     * Construct the game.
+     * Construct the game window for the given game.
+     * In need of generalization for different types of games.
      */
-    public Game (Gambler player) {
-        myWheel = new Wheel();
-        myPlayer = player;
+    public GameView (GameModel model) {
+    	myModel = model;
         BorderPane root = new BorderPane();
         VBox game = new VBox();
         addComponentToPane(game, makeStatusBar());
@@ -52,6 +49,9 @@ public class Game {
         myScene = new Scene(root, DEFAULT_SIZE.width, DEFAULT_SIZE.height);
     }
     
+    /**
+     * gives the scene so that it can be displayed by the application
+     */
     public Scene getScene() {
         return myScene;
     }
@@ -63,10 +63,20 @@ public class Game {
         return DEFAULT_NAME;
     }
     
+    /**
+     * Adds a component of the pane (eg: status bar) to the greater scene
+     * @param parentPane the scene the component is added to
+     * @param component the component to add
+     */
     private void addComponentToPane(Pane parentPane, Node component) {
         parentPane.getChildren().add(component);
     }
     
+    /**
+     * Makes a horizontal panel from a collection of components
+     * @param subComponents the components to include in the panel
+     * @return the compiled panel
+     */
     private Node makeHorizontalPanel(Collection<Node> subComponents) {
         HBox panel = new HBox();
         for(Node n : subComponents) {
@@ -75,22 +85,39 @@ public class Game {
         return panel;
     }
 
+    /**
+     * Makes a panel to display the status (ie: bankroll) of the player
+     */
     private Node makeStatusBar() {
         Label bankrollLabel = new Label("Bankroll: ");
-        myBankrollDisplay = new Label("" + myPlayer.getBankroll());
+        myBankrollDisplay = new Label(myModel.getPlayerBankroll());
         return makeHorizontalPanel(Arrays.asList(bankrollLabel, myBankrollDisplay));
     }
     
+    /**
+     * Updates the status bar with more current bankroll information
+     */
+    private void updateBankrollDisplay() {
+        myBankrollDisplay.setText(myModel.getPlayerBankroll());
+    }
+    
+    /**
+     * Makes a panel of buttons that the user can use to create different bets
+     */
     private Node makeInteractionBar() {
         Collection<Node> betButtons = new ArrayList<Node>();
-        for(Bet bet : myPossibleBets) {
+        for(Bet bet : myModel.getPossibleBets()) {
             betButtons.add(makePlaceBetButton(bet));
         }
         return makeHorizontalPanel(betButtons);
     }
     
+    /**
+     * Makes a panel that displays the output of different actions the user takes
+     * Initialized to display a simple greeting.
+     */
     private Node makeOutputBar() {
-        myOutput = new Label("Hello " + myPlayer.getName() + 
+        myOutput = new Label("Hello " + myModel.getPlayerName() + 
                 ", let's play " + getName());
         return makeHorizontalPanel(Arrays.asList(myOutput));
     }
@@ -103,44 +130,11 @@ public class Game {
         placeBetButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent arg0) {
-                playRound(bet);
+                myOutput.setText(myModel.playRound(bet));
+                updateBankrollDisplay();
             }
         });
         return placeBetButton;
     }
     
-    private void updateBankrollDisplay() {
-        myBankrollDisplay.setText("" + myPlayer.getBankroll());
-    }
-    
-    /**
-     * Play a round of this game.
-     *
-     * For Roulette, this means prompting the player to make a bet, spinning the
-     * roulette wheel, and then verifying that the bet is won or lost.
-     *
-     * @param player one that wants to play a round of the game
-     */
-    private void playRound(Bet bet) {
-        int amount = PopupReader.promptRange("How much do you want to bet",
-                0, myPlayer.getBankroll());
-        bet.place();
-        
-        myOutput.setText("Spinning ...");
-        Wheel.SpinResult result = myWheel.spin();
-        
-        String resultsOutput = String.format("Dropped into %s\n", result);
-
-        if (bet.isMade(result)) {
-            resultsOutput += "*** Congratulations :) You win ***";
-            amount += bet.payout(amount);
-        } else {
-            resultsOutput += "*** Sorry :( You lose ***";
-            amount *= -1;
-        }
-        
-        myOutput.setText(resultsOutput);
-        myPlayer.updateBankroll(amount);
-        updateBankrollDisplay();
-    }
 }
